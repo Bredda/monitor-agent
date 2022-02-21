@@ -1,9 +1,12 @@
-package net.atos.monitoragent;
+package net.atos.monitoragent.services;
 
 import com.sun.management.OperatingSystemMXBean;
 
 import java.lang.management.ManagementFactory;
 
+/**
+ * Service to poll system informations
+ */
 public class SysInfoService {
 
     private static final SysInfoService instance = new SysInfoService();

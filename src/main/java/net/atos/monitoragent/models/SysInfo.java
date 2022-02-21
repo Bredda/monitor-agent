@@ -1,10 +1,7 @@
-package net.atos.monitoragent;
+package net.atos.monitoragent.models;
 
+import com.opencsv.bean.CsvRecurse;
 import lombok.Getter;
-import net.atos.monitoragent.models.SysInfoCpu;
-import net.atos.monitoragent.models.SysInfoMemory;
-import net.atos.monitoragent.models.SysInfoProcess;
-import net.atos.monitoragent.models.SysInfoSys;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,13 +11,17 @@ public class SysInfo {
 
     private final String agent;
     private final String date;
+    @CsvRecurse
     private final SysInfoSys system;
+    @CsvRecurse
     private final SysInfoCpu cpu;
+    @CsvRecurse
     private final SysInfoProcess process;
+    @CsvRecurse
     private final SysInfoMemory memory;
 
-    public SysInfo() {
-        this.agent = System.getProperty("agentName") == null ? "agentName not set" : System.getProperty("agentName") ;
+    public SysInfo(String agentName) {
+        this.agent = agentName ;
         this.system = new SysInfoSys();
         this.cpu = new SysInfoCpu();
         this.process = new SysInfoProcess();
@@ -29,4 +30,5 @@ public class SysInfo {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         this.date = dateFormat.format(currDate);
     }
+
 }

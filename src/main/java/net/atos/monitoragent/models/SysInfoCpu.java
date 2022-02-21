@@ -1,7 +1,7 @@
 package net.atos.monitoragent.models;
 
 import lombok.Getter;
-import net.atos.monitoragent.SysInfoService;
+import net.atos.monitoragent.services.SysInfoService;
 
 @Getter
 public class SysInfoCpu {
