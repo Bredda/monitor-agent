@@ -1,35 +1,37 @@
 # Monitor Agent
 
-Web Service exposant des informations sur le système local
+Web Service for system resources monitoring
 
-Nécessite JDK >= 14
+**Must use JDK >= 14**
+
+A Rest Web Service is exposed on 3000 port, with these given routes:
+* `/monitor-agent/one` - retrieve a one-time measurement
+* `monitor-agent/start` - starts scheduled measurement. A measure is taken every 5 seconds
+* `monitor-agent/stop` - stops the scheduled measurements
+* `monitor-agent/resume` - resume the scheduled measurements
+* `monitor-agent/measures` - retrieved stored measurements in CSV format
+
+![Web Service](./docs/temp.drawio.png)
+
 
 ## Build
 
-* Depuis la racine du projet (nécessite Maven):
+* From project root dir (using Maven):
 `mvn clean install`
 
-OU
+OR
 
-* Depuis IntelliJ, lancer la configuration `Build Jar`
+* From IntelliJ, use `Build Jar` configuration
 
-Le jar est produit dans le dossier `/target`
+Final jar is build in `/target` folder
 
 ## Usage
-
-### Launch
-
 `java -jar monitor-agent-1.0.0`
 
-Properties disponibles:
-* `agentName` - nom pour cet agent. Il sera renvoyé dans les informations système. Défaut: `agentName not set`
-* `server.port` - permet de spécifier le port du Web Service. Défaut `3000` 
-
-`java -jar -DagentName=[nom de l'agent] -Dserver.port[port] monitor-agent-1.0.0`
 
 ### Exemple d'appel
 
-`GET http://localhost:3000/monitor-agent`
+`GET http://localhost:3000/monitor-agent/one`
 ```json
 {
     "agent": "PO1",
@@ -61,3 +63,17 @@ Properties disponibles:
     }
 }
 ```
+
+## Measure Object
+
+| Path         | Description     | Example |
+|--------------|-----------|------------|
+| agent | Name of the local agent      | Agent01        |
+| date      | Date of the mease. dd/mm/yyyy hh:mm:ss  | 18/02/2022 10:00:15       |
+| system | Information relative to the local system | |
+| system.arch | System architecture | amd64
+| system.version | Version of the operating system | 10.0 |
+| system.name | Name of the operating system | Windows 10
+| cpu |Informations relative to CPU | | 
+| cpu.availableProcessors |Number of available processors | 8 |
+

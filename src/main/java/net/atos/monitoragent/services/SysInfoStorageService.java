@@ -1,7 +1,7 @@
 package net.atos.monitoragent.services;
 
 import net.atos.monitoragent.models.SysInfo;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -12,11 +12,11 @@ import java.util.List;
  */
 @Component
 public class SysInfoStorageService {
-    @Value("${agent.name}")
-    private String agentName;
     private List<SysInfo> sysInfoList;
+    private final SysInfoService sysInfoService;
 
-    public SysInfoStorageService() {
+    public SysInfoStorageService(@Autowired SysInfoService sysInfoService) {
+        this.sysInfoService = sysInfoService;
         this.reset();
     }
 
@@ -24,7 +24,7 @@ public class SysInfoStorageService {
      * Take a new measurement and add it to history
      */
     public void takeMeasure() {
-        this.sysInfoList.add(new SysInfo(agentName));
+        this.sysInfoList.add(this.sysInfoService.getMeasure());
     }
 
     /**

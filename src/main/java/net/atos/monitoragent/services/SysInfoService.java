@@ -1,45 +1,87 @@
 package net.atos.monitoragent.services;
 
 import com.sun.management.OperatingSystemMXBean;
+import net.atos.monitoragent.models.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.lang.management.ManagementFactory;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Service to poll system informations
  */
+@Component
 public class SysInfoService {
 
-    private static final SysInfoService instance = new SysInfoService();
-
+    @Value("${agent.name}")
+    private String agentName;
     private final OperatingSystemMXBean operatingSystemMXBean;
     private final Runtime runtime;
 
-    private SysInfoService() {
+    public SysInfoService() {
         operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
         runtime = Runtime.getRuntime();
     }
 
-    public static SysInfoService getInstance() {
-        return instance;
+    public SysInfo getMeasure() {
+        SysInfo sys = new SysInfo();
+
+        sys.setAgent(agentName);
+        Date currDate = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        sys.setDate(dateFormat.format(currDate));
+
+        SysInfoSys sysInfoSys = new SysInfoSys();
+        sysInfoSys.setName(this.getName());
+        sysInfoSys.setArch(this.getArch());
+        sysInfoSys.setVersion(this.getVersion());
+        sys.setSystem(sysInfoSys);
+
+        SysInfoCpu sysInfoCpu = new SysInfoCpu();
+        sysInfoCpu.setAvailableProcessors(this.getAvailableProcessors());
+        sysInfoCpu.setCpuLoad(this.getSystemCpuLoad());
+        sysInfoCpu.setCpuAverageLoad(this.getSystemLoadAverage());
+        sys.setCpu(sysInfoCpu);
+
+        SysInfoProcess sysInfoProcess = new SysInfoProcess();
+        sysInfoProcess.setProcessAllocatedMemory( getProcessAllocatedMemory());
+        sysInfoProcess.setProcessCpuTime(this.getProcessCpuTime());
+        sysInfoProcess.setProcessMemoryLoad(this.getProcessMemoryLoad());
+        sysInfoProcess.setProcessTotalMemory(this.getProcessTotalMemory());
+        sysInfoProcess.setProcessPresumableFreeMemory(this.getProcessPresumableFreeMemory());
+        sysInfoProcess.setProcessCpuLoad(this.getProcessCpuLoad());
+        sys.setProcess(sysInfoProcess);
+
+        SysInfoMemory memory = new SysInfoMemory();
+        memory.setCommittedVirtualSize(this.getCommittedVirtualMemorySize());
+        memory.setTotalSwapSize(this.getTotalSwapSpaceSize());
+        memory.setFreeSwapSize(this.getFreeSwapSpaceSize());
+        memory.setFreeMemory(this.getFreeMemorySize());
+        memory.setTotalMemory(this.getTotalMemorySize());
+        sys.setMemory(memory);
+
+        return sys;
     }
 
-    public long getCommittedVirtualMemorySize() {
+    private long getCommittedVirtualMemorySize() {
         return operatingSystemMXBean.getCommittedVirtualMemorySize();
     }
 
-    public long getTotalSwapSpaceSize() {
+    private long getTotalSwapSpaceSize() {
         return operatingSystemMXBean.getTotalSwapSpaceSize();
     }
 
-    public long getFreeSwapSpaceSize() {
+    private long getFreeSwapSpaceSize() {
         return operatingSystemMXBean.getFreeSwapSpaceSize();
     }
 
-    public long getFreeMemorySize() {
+    private long getFreeMemorySize() {
         return operatingSystemMXBean.getFreeMemorySize();
     }
 
-    public long getTotalMemorySize() {
+    private long getTotalMemorySize() {
         return operatingSystemMXBean.getTotalMemorySize();
     }
 
@@ -47,7 +89,7 @@ public class SysInfoService {
      * A value between 0 and 1 representing system's overall CPU usage.
      * Beware that the first readings will return 0 (see https://stackoverflow.com/a/20457130/778272).
      */
-    public double getSystemCpuLoad() {
+    private double getSystemCpuLoad() {
         return operatingSystemMXBean.getCpuLoad();
     }
 
@@ -58,7 +100,7 @@ public class SysInfoService {
      * See this excellent article on the Linux average system load metric:
      * http://www.brendangregg.com/blog/2017-08-08/linux-load-averages.html
      */
-    public double getSystemLoadAverage() {
+    private double getSystemLoadAverage() {
         return operatingSystemMXBean.getSystemLoadAverage();
     }
 
@@ -66,11 +108,11 @@ public class SysInfoService {
      * A value between 0 and 1 representing this process' CPU usage.
      * Beware that the first readings will return 0 (see https://stackoverflow.com/a/20457130/778272).
      */
-    public double getProcessCpuLoad() {
+    private double getProcessCpuLoad() {
         return operatingSystemMXBean.getProcessCpuLoad();
     }
 
-    public long getProcessCpuTime() {
+    private long getProcessCpuTime() {
         return operatingSystemMXBean.getProcessCpuTime();
     }
 
@@ -82,7 +124,7 @@ public class SysInfoService {
      *
      * For more details, see https://stackoverflow.com/a/18366283/778272
      */
-    public long getProcessAllocatedMemory() {
+    private long getProcessAllocatedMemory() {
         return runtime.totalMemory() - runtime.freeMemory();
     }
 
@@ -90,7 +132,7 @@ public class SysInfoService {
      * This is the maximum amount this JVM will ever get from the operating system (as set by the `-Xmx` parameter).
      * See https://stackoverflow.com/a/18366283/778272
      */
-    public long getProcessTotalMemory() {
+    private long getProcessTotalMemory() {
         return runtime.maxMemory();
     }
 
@@ -98,14 +140,14 @@ public class SysInfoService {
      * This is the total amount of memory still available for use by this process.
      * See https://stackoverflow.com/a/18366283/778272
      */
-    public long getProcessPresumableFreeMemory() {
+    private long getProcessPresumableFreeMemory() {
         return runtime.maxMemory() - getProcessAllocatedMemory();
     }
 
     /**
      * A value between 0 and 1 representing the amount of memory available to the JVM that is currently being used.
      */
-    public float getProcessMemoryLoad() {
+    private float getProcessMemoryLoad() {
         return getProcessAllocatedMemory() / (float) getProcessTotalMemory();
     }
 
@@ -113,28 +155,28 @@ public class SysInfoService {
      * Returns the number of processors available. A machine with 6 cores and hyper-threading enabled will report 12
      * processors.
      */
-    public int getAvailableProcessors() {
+    private int getAvailableProcessors() {
         return operatingSystemMXBean.getAvailableProcessors();
     }
 
     /**
      * The architecture of the machine (e.g.: "x86_64").
      */
-    public String getArch() {
+    private String getArch() {
         return operatingSystemMXBean.getArch();
     }
 
     /**
      * The version of the operating system (e.g.: "10.14.6").
      */
-    public String getVersion() {
+    private String getVersion() {
         return operatingSystemMXBean.getVersion();
     }
 
     /**
      * The name of the operating system (e.g.: "Mac OS X").
      */
-    public String getName() {
+    private String getName() {
         return operatingSystemMXBean.getName();
     }
 
