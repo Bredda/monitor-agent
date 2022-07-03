@@ -1,6 +1,5 @@
 package net.atos.monitoragent.models;
 
-import com.opencsv.bean.CsvRecurse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,14 +9,23 @@ public class SysInfo {
 
     private String agent;
     private String date;
-    @CsvRecurse
-    private SysInfoSys system;
-    @CsvRecurse
-    private SysInfoCpu cpu;
-    @CsvRecurse
-    private SysInfoProcess process;
-    @CsvRecurse
-    private SysInfoMemory memory;
+    private String arch;
+    private String version;
+    private String name;
+    private int availableProcessors;
+    private double cpuLoad;
+    private double cpuAverageLoad;
+    private double processCpuLoad;
+    private long processCpuTime;
+    private long processAllocatedMemory;
+    private long processTotalMemory;
+    private long processPresumableFreeMemory;
+    private float processMemoryLoad;
+    private long committedVirtualSize;
+    private long totalSwapSize;
+    private long freeSwapSize;
+    private long freeMemory;
+    private long totalMemory;
 
 
 }

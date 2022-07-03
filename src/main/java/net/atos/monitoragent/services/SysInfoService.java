@@ -33,34 +33,26 @@ public class SysInfoService {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         sys.setDate(dateFormat.format(currDate));
 
-        SysInfoSys sysInfoSys = new SysInfoSys();
-        sysInfoSys.setName(this.getName());
-        sysInfoSys.setArch(this.getArch());
-        sysInfoSys.setVersion(this.getVersion());
-        sys.setSystem(sysInfoSys);
+        sys.setName(this.getName());
+        sys.setArch(this.getArch());
+        sys.setVersion(this.getVersion());
 
-        SysInfoCpu sysInfoCpu = new SysInfoCpu();
-        sysInfoCpu.setAvailableProcessors(this.getAvailableProcessors());
-        sysInfoCpu.setCpuLoad(this.getSystemCpuLoad());
-        sysInfoCpu.setCpuAverageLoad(this.getSystemLoadAverage());
-        sys.setCpu(sysInfoCpu);
+        sys.setAvailableProcessors(this.getAvailableProcessors());
+        sys.setCpuLoad(this.getSystemCpuLoad());
+        sys.setCpuAverageLoad(this.getSystemLoadAverage());
 
-        SysInfoProcess sysInfoProcess = new SysInfoProcess();
-        sysInfoProcess.setProcessAllocatedMemory( getProcessAllocatedMemory());
-        sysInfoProcess.setProcessCpuTime(this.getProcessCpuTime());
-        sysInfoProcess.setProcessMemoryLoad(this.getProcessMemoryLoad());
-        sysInfoProcess.setProcessTotalMemory(this.getProcessTotalMemory());
-        sysInfoProcess.setProcessPresumableFreeMemory(this.getProcessPresumableFreeMemory());
-        sysInfoProcess.setProcessCpuLoad(this.getProcessCpuLoad());
-        sys.setProcess(sysInfoProcess);
+        sys.setProcessAllocatedMemory( getProcessAllocatedMemory());
+        sys.setProcessCpuTime(this.getProcessCpuTime());
+        sys.setProcessMemoryLoad(this.getProcessMemoryLoad());
+        sys.setProcessTotalMemory(this.getProcessTotalMemory());
+        sys.setProcessPresumableFreeMemory(this.getProcessPresumableFreeMemory());
+        sys.setProcessCpuLoad(this.getProcessCpuLoad());
 
-        SysInfoMemory memory = new SysInfoMemory();
-        memory.setCommittedVirtualSize(this.getCommittedVirtualMemorySize());
-        memory.setTotalSwapSize(this.getTotalSwapSpaceSize());
-        memory.setFreeSwapSize(this.getFreeSwapSpaceSize());
-        memory.setFreeMemory(this.getFreeMemorySize());
-        memory.setTotalMemory(this.getTotalMemorySize());
-        sys.setMemory(memory);
+        sys.setCommittedVirtualSize(this.getCommittedVirtualMemorySize());
+        sys.setTotalSwapSize(this.getTotalSwapSpaceSize());
+        sys.setFreeSwapSize(this.getFreeSwapSpaceSize());
+        sys.setFreeMemory(this.getFreeMemorySize());
+        sys.setTotalMemory(this.getTotalMemorySize());
 
         return sys;
     }
@@ -78,11 +70,11 @@ public class SysInfoService {
     }
 
     private long getFreeMemorySize() {
-        return operatingSystemMXBean.getFreeMemorySize();
+        return operatingSystemMXBean.getFreePhysicalMemorySize();
     }
 
     private long getTotalMemorySize() {
-        return operatingSystemMXBean.getTotalMemorySize();
+        return operatingSystemMXBean.getTotalPhysicalMemorySize();
     }
 
     /**
@@ -90,7 +82,7 @@ public class SysInfoService {
      * Beware that the first readings will return 0 (see https://stackoverflow.com/a/20457130/778272).
      */
     private double getSystemCpuLoad() {
-        return operatingSystemMXBean.getCpuLoad();
+        return operatingSystemMXBean.getSystemCpuLoad();
     }
 
     /**

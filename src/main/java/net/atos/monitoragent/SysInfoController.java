@@ -1,9 +1,5 @@
 package net.atos.monitoragent;
 
-import com.opencsv.bean.StatefulBeanToCsv;
-import com.opencsv.bean.StatefulBeanToCsvBuilder;
-import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import net.atos.monitoragent.models.SysInfo;
 import net.atos.monitoragent.payload.MessageResponse;
 import net.atos.monitoragent.services.SchedulerService;
@@ -17,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -68,15 +63,8 @@ public class SysInfoController {
         log.info(message);
         return new MessageResponse(200, message);
     }
-    @GetMapping(value = "/monitor-agent/measures", produces = "text/csv")
-    public void getSysInfoSchedulerMeasure(HttpServletResponse servletResponse) {
-        try {
-            StatefulBeanToCsv<List<SysInfo>> beanToCsv = new StatefulBeanToCsvBuilder<List<SysInfo>>(servletResponse.getWriter())
-                    .withSeparator(';')
-                    .build();
-            beanToCsv.write(this.sysInfoStorageService.getMeasures());
-        } catch (IOException | CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e) {
-            e.printStackTrace();
-        }
+    @GetMapping(value = "/monitor-agent/measures")
+    public List<SysInfo> getSysInfoSchedulerMeasure(HttpServletResponse servletResponse) {
+        return this.sysInfoStorageService.getMeasures();
     }
 }
